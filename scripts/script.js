@@ -64,12 +64,11 @@ plane.rotation.x = -Math.PI / 2;
 
 // Crear Cubo //
 const cubeGeometry = new THREE.BoxGeometry();
-const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x7ffc66 });
+const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-cube.scale.set(0.5, 0.5, 0.5);
-cube.position.y = 5.9;
-cube.position.x = -4;
-cube.position.z = 4;
+cube.scale.set(0.5,0.5,0.5);
+cube.position.y = 1;
+cube.position.z = 0;
 cube.castShadow = true;
 cube.receiveShadow = true;
 scene.add(cube);
@@ -138,8 +137,8 @@ function rainVelocity() {
 
 const animate = function () {
     requestAnimationFrame(animate);
-    // cube.rotation.y += 0.1;
-    // cube.rotation.z += 0.1;
+    cube.rotation.y += 0.1;
+    cube.rotation.z += 0.1;
 
     rainVelocity();
 
