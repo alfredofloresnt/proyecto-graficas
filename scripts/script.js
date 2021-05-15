@@ -12,40 +12,37 @@ const controls = new OrbitControls(camera, renderer.domElement);
 camera.position.z = 5;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMapSoft = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Crear luz //
-let light = new THREE.PointLight(0xffffff, 1, 1000);
-light.position.set(0, 12, 0);
+let light = new THREE.PointLight(0xFFE294, 1, 25);
+light.position.set( 0, 3, 0 );
 light.castShadow = true;            // default false
-light.shadow.mapSize.width = 1024;  // default 512
-light.shadow.mapSize.height = 1024; // default 512
-light.shadow.camera.near = 2;       // default 0.5
-light.shadow.camera.far = 100;      // default 500
-scene.add(light);
+light.shadow.mapSize.width = 2048;  // default 512
+light.shadow.mapSize.height =2048; // default 512
+light.shadow.camera.near = 0.0001;       // default 0.5
+light.shadow.camera.far = 10;      // default 500
+light.shadow.bias = -0.005;
+scene.add( light );
 
+const alight = new THREE.AmbientLight( 0x404040 ); // soft white light
+scene.add( alight );
 
 // Helper //
-const helper = new THREE.CameraHelper(light.shadow.camera);
-//scene.add( helper );
-
-
-
+const helper = new THREE.CameraHelper( light.shadow.camera );
+scene.add( helper );
 
 let room;
-loader.load('../models/room2.glb', function (gltf) {
+loader.load('../models/gamingRoom.glb', function (gltf) {
     room = gltf.scene;
+    room.castShadow = true; 
+    room.receiveShadow = true;
+    room.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; node.receiveShadow = true} } );
     scene.add(room);
-    // model.traverse( function ( object ) {
-
-    //     if ( object.isMesh ) object.castShadow = true;
-
-    // } );
-    // room.castShadow = true; 
-    // room.receiveShadow = true; 
 }, undefined, function (error) {
-    console.errr(error);
+    console.log(error);
 });
 
 
@@ -137,8 +134,8 @@ function rainVelocity() {
 
 const animate = function () {
     requestAnimationFrame(animate);
-    cube.rotation.y += 0.1;
-    cube.rotation.z += 0.1;
+    cube.rotation.y += 0.01;
+    cube.rotation.z += 0.01;
 
     rainVelocity();
 
