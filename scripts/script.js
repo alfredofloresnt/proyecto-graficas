@@ -16,23 +16,41 @@ renderer.shadowMapSoft = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Crear luz //
-let light = new THREE.PointLight(0xFFE294, 1, 25);
-light.position.set( 0, 3, 0 );
+// Luz auxiliar
+let auxLight = new THREE.PointLight(0xffffff, 1, 25);
+auxLight.position.set(0, 1, 0);
+// scene.add(auxLight);
+
+// Crear luz del cuarto
+let hue = 0;
+let light = new THREE.SpotLight(0xFFE294, 1, 25);
+light.position.set( -4, 4.85, -4 );
 light.castShadow = true;            // default false
+scene.add( light );
 light.shadow.mapSize.width = 2048;  // default 512
 light.shadow.mapSize.height =2048; // default 512
 light.shadow.camera.near = 0.0001;       // default 0.5
 light.shadow.camera.far = 10;      // default 500
 light.shadow.bias = -0.005;
-scene.add( light );
+
+let light2 = new THREE.SpotLight(0xFFE294, 1, 25);
+light2.position.set( 4, 4.85, -4 );
+light2.castShadow = true;            // default false
+scene.add( light2 );
+light2.shadow.mapSize.width = 2048;  // default 512
+light2.shadow.mapSize.height =2048; // default 512
+light2.shadow.camera.near = 0.0001;       // default 0.5
+light2.shadow.camera.far = 10;      // default 500
+light2.shadow.bias = -0.005;
 
 const alight = new THREE.AmbientLight( 0x404040 ); // soft white light
 scene.add( alight );
 
 // Helper //
 const helper = new THREE.CameraHelper( light.shadow.camera );
+const helper2 = new THREE.CameraHelper( light2.shadow.camera );
 scene.add( helper );
+scene.add ( helper2 )
 
 let room;
 loader.load('../models/gamingRoom.glb', function (gltf) {
@@ -61,15 +79,24 @@ plane.rotation.x = -Math.PI / 2;
 
 // Crear Cubo //
 const cubeGeometry = new THREE.BoxGeometry();
-const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const cubeTexture = new THREE.TextureLoader().load('img/itemBox.png');
+const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: cubeTexture });
 const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-cube.scale.set(0.5,0.5,0.5);
-cube.position.y = 1;
-cube.position.z = 0;
+cube.scale.set(0.2,0.2,0.2);
+cube.position.x = -3.5;
+cube.position.y = 2.2;
+cube.position.z = 0.9;
 cube.castShadow = true;
 cube.receiveShadow = true;
 scene.add(cube);
 
+// Cube light
+const cubeLight = new THREE.PointLight( 0xffe75a, 40, 0.6);
+cubeLight.position.set(-3.5, 2.2, 0.9);
+scene.add(cubeLight);
+
+const cubeLightHelper = new THREE.PointLightHelper(cubeLight, 0.6);
+scene.add( cubeLightHelper );
 
 camera.position.z = 20;
 camera.position.y = 1.10;
@@ -134,6 +161,16 @@ function rainVelocity() {
 
 const animate = function () {
     requestAnimationFrame(animate);
+
+    // cambiar color de luz
+    var h = hue * 0.01 % 1;
+    var s = 0.5;
+    var l = 0.5;
+    light.color.setHSL(h, s, l);
+    light2.color.setHSL(h, s, l);
+    hue = hue + 0.08;
+
+
     cube.rotation.y += 0.01;
     cube.rotation.z += 0.01;
 
